@@ -15,6 +15,18 @@ function get_extra_admin_capabilities() {
     return [
         'edit_theme_options' => true,
         'customize' => true,
+        'create_personal' => true,
+        'delete_others_personal' => true,
+        'delete_personal' => true,
+        'delete_private_personales' => true,
+        'delete_published_personales' => true,
+        'edit_others_personal' => true,
+        'edit_personales' => true,
+        'edit_private_personales' => true,
+        'edit_published_personales' => true,
+        'publish_personales' => true,
+        'read_private_personales' => true,
+        'read_personal' => true,
     ];
 }
 
