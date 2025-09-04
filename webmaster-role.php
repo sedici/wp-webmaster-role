@@ -32,19 +32,29 @@ function get_extra_admin_capabilities() {
     ];
 }
 
-function activar_crear_rol_personalizado() {
-    $crear_rol = function () {
-        if (!get_role('webmaster')) {
-            $editor_role = get_role('editor');
-            if ($editor_role) {
-                $capabilities = array_merge(
-                    $editor_role->capabilities,
-                    get_extra_admin_capabilities()
-                );
-                add_role('webmaster', 'Webmaster', $capabilities);
-            }
+function create_rol() {
+    if (!get_role('webmaster')) {
+        $editor_role = get_role('editor');
+        if ($editor_role) {
+            $capabilities = array_merge(
+                $editor_role->capabilities,
+                get_extra_admin_capabilities()
+            );
+            add_role('webmaster', 'Webmaster', $capabilities);
         }
-    };
+    }
+}
+
+function set_webmaster_role_to_editors() {
+
+    $editores = get_users(['role' => 'editor']);  
+    
+    foreach ($editores as $usuario) {
+        $usuario->set_role('webmaster');
+    }
+}
+
+function create_and_set_webmaster_role() {
 
     if (is_multisite()) {
         $blog_id_actual = get_current_blog_id();
@@ -52,17 +62,21 @@ function activar_crear_rol_personalizado() {
 
         foreach ($sitios as $sitio) {
             switch_to_blog($sitio->blog_id);
-            $crear_rol();
+            create_rol();
+            set_webmaster_role_to_editors();
             restore_current_blog();
         }
 
         switch_to_blog($blog_id_actual);
     } else {
-        $crear_rol();
+        create_rol();
+        set_webmaster_role_to_editors();
     }
+
+
 }
 
-register_activation_hook(__FILE__, 'activar_crear_rol_personalizado');
+register_activation_hook(__FILE__, 'create_and_set_webmaster_role');
 
 // Al desactivar el plugin
 function remove_webmaster_role() {
