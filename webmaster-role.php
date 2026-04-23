@@ -21,6 +21,7 @@ function get_extra_admin_capabilities() {
         'delete_private_personales' => true,
         'delete_published_personales' => true,
         'edit_others_personal' => true,
+        'edit_other_personales' => true,
         'edit_personal' => true,
         'edit_personales' => true,
         'edit_other_personales' => true,
@@ -29,6 +30,7 @@ function get_extra_admin_capabilities() {
         'publish_personales' => true,
         'read_private_personales' => true,
         'read_personal' => true,
+        'manage_options' => true,
     ];
 }
 
