@@ -10,104 +10,40 @@
  * Distributed under the GNU GPL v3. For full terms see the file docs/COPYING.	
 */
 
-// Capabilities de administrador que se agregarán al nuevo rol
-function get_extra_admin_capabilities() {
-    return [
-        'edit_theme_options' => true,
-        'customize' => true,
-        'create_personal' => true,
-        'delete_others_personal' => true,
-        'delete_personal' => true,
-        'delete_private_personales' => true,
-        'delete_published_personales' => true,
-        'edit_others_personal' => true,
-        'edit_other_personales' => true,
-        'edit_personal' => true,
-        'edit_personales' => true,
-        'edit_other_personales' => true,
-        'edit_private_personales' => true,
-        'edit_published_personales' => true,
-        'publish_personales' => true,
-        'read_private_personales' => true,
-        'read_personal' => true,
-        'manage_options' => true,
-    ];
+namespace SediciWebmasterRole;
+
+if ( ! defined( 'ABSPATH' ) ) {
+    exit; // Exit if accessed directly.
 }
 
-function create_rol() {
-    if (!get_role('webmaster')) {
-        $editor_role = get_role('editor');
-        if ($editor_role) {
-            $capabilities = array_merge(
-                $editor_role->capabilities,
-                get_extra_admin_capabilities()
-            );
-            add_role('webmaster', 'Webmaster', $capabilities);
-        }
-    }
+/* Definición de constantes globales */
+define('SEDICI_WEBMASTER_PLUGIN_DIR', plugin_dir_path(__FILE__));
+
+// Carga del Autoloader 
+require_once SEDICI_WEBMASTER_PLUGIN_DIR . 'src/inc/class-autoloader.php';
+// Carga del archivo de la clase Admin 
+require_once SEDICI_WEBMASTER_PLUGIN_DIR . 'src/admin/class-admin.php';
+
+register_activation_hook(__FILE__, array('SediciWebmasterRole\Inc\Activator', 'activate'));
+register_deactivation_hook(__FILE__, array('SediciWebmasterRole\Inc\Deactivator', 'deactivate'));
+
+
+Class WebmasterRole {
+
+    static $admin;
+	/**
+	 * Inicia el plugin
+	 *
+	 */
+	public static function init()
+	{
+		$plugin = \SediciWebmasterRole\Admin\Admin::get_instance();
+        $plugin->run();
+	}
 }
 
-function set_webmaster_role_to_editors() {
-
-    $editores = get_users(['role' => 'editor']);  
-    
-    foreach ($editores as $usuario) {
-        $usuario->set_role('webmaster');
-    }
+function webmaster_role_init() {
+    return WebmasterRole::init();
 }
 
-function create_and_set_webmaster_role() {
-
-    if (is_multisite()) {
-        $blog_id_actual = get_current_blog_id();
-        $sitios = get_sites();
-
-        foreach ($sitios as $sitio) {
-            switch_to_blog($sitio->blog_id);
-            create_rol();
-            set_webmaster_role_to_editors();
-            restore_current_blog();
-        }
-
-        switch_to_blog($blog_id_actual);
-    } else {
-        create_rol();
-        set_webmaster_role_to_editors();
-    }
-
-
-}
-
-register_activation_hook(__FILE__, 'create_and_set_webmaster_role');
-
-// Al desactivar el plugin
-function remove_webmaster_role() {
-    $remover_rol = function() {
-        $users = get_users(['role' => 'webmaster']);
-
-        // Cambiar los usuarios con el rol 'webmaster' a 'editor'
-        foreach ($users as $user) {
-            $user->set_role('editor');
-        }
-
-        // Eliminar el rol
-        remove_role('webmaster');
-    };
-
-    if (is_multisite()) {
-        $blog_id_actual = get_current_blog_id();
-        $sitios = get_sites();
-
-        foreach ($sitios as $sitio) {
-            switch_to_blog($sitio->blog_id);
-            $remover_rol();
-            restore_current_blog();
-        }
-
-        switch_to_blog($blog_id_actual);
-    } else {
-        $remover_rol();
-    }
-}
-
-register_deactivation_hook(__FILE__, 'remove_webmaster_role');
+webmaster_role_init();
