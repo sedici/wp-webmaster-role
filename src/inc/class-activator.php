@@ -61,6 +61,7 @@ class Activator {
         }
 
         self::create_rol();
+        add_site_option('webmaster_role_switched_flag', false);
     }
 
 }

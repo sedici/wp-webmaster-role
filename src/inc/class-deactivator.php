@@ -5,7 +5,7 @@ use SediciWebmasterRole\Admin;
 
 class Deactivator {
 
-    public static function remove_role_webmaster_individual_site() {
+    public static function set_editor_role_to_webmasters() {
         
         $users = get_users(['role' => 'webmaster']);
 
@@ -13,9 +13,6 @@ class Deactivator {
         foreach ($users as $user) {
             $user->set_role('editor');
         }
-
-        // Eliminar el rol
-        remove_role('webmaster');
     }
 
     public static function remove_webmaster_role_multisite() {
@@ -24,7 +21,7 @@ class Deactivator {
 
         foreach ($sitios as $sitio) {
             switch_to_blog($sitio->blog_id);
-            self::remove_role_webmaster_individual_site();
+            self::set_editor_role_to_webmasters();
             restore_current_blog();
         }
 
@@ -34,10 +31,9 @@ class Deactivator {
 	public static function deactivate($network_wide) {
         if (is_multisite() && $network_wide) {
             self::remove_webmaster_role_multisite();
-        } else {
-            self::remove_role_webmaster_individual_site();
+            remove_role('webmaster');
+            delete_site_option('webmaster_role_switched_flag');
         }
-
     }
         
 }
