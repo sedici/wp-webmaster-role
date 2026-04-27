@@ -1,6 +1,7 @@
 <?php
 
 namespace SediciWebmasterRole\Admin;
+use SediciWebmasterRole\Inc\Deactivator;
 
 if ( ! defined( 'ABSPATH' ) ) {
     exit; // Exit if accessed directly.
@@ -19,10 +20,11 @@ class Admin {
 
     public function run() {
 
-        if (is_multisite()) {
-            add_action('network_admin_menu', array($this, 'add_plugin_admin_menu'));
-        }
-        else add_action('admin_menu', array($this, 'add_plugin_admin_menu'));
+        if (is_multisite()) add_action('network_admin_menu', array($this, 'add_plugin_admin_menu'));
+
+        add_action( 'admin_post_switch_roles_webmaster_plugin', [ $this, 'switch_roles' ] );
+        
+
 
         //add_action('admin_init', array($this, 'create_and_set_webmaster_role_multisite'));
         //add_action('admin_init', array($this, 'create_and_set_webmaster_role_individual_site'));
@@ -43,7 +45,7 @@ class Admin {
         include_once dirname(__DIR__) . '/admin/views/role-switcher-form.php';
     }
 
-    private function create_and_set_webmaster_role_multisite() {
+    private function set_webmaster_role_multisite() {
 
         if (is_multisite()) {
             $blog_id_actual = get_current_blog_id();
@@ -51,20 +53,13 @@ class Admin {
 
             foreach ($sitios as $sitio) {
                 switch_to_blog($sitio->blog_id);
-                create_rol();
-                set_webmaster_role_to_editors();
+                $this->set_webmaster_role_to_editors();
                 restore_current_blog();
             }
 
             switch_to_blog($blog_id_actual);
         }
     }
-
-    private function create_and_set_webmaster_role_individual_site() {
-        create_rol();
-        set_webmaster_role_to_editors();
-    }
-   
 
     private function set_webmaster_role_to_editors() {
 
@@ -73,6 +68,26 @@ class Admin {
         foreach ($editores as $usuario) {
             $usuario->set_role('webmaster');
         }
+    }
+
+    public function switch_roles() {
+        if ( ! isset( $_POST['webmaster_role_nonce'] ) || ! wp_verify_nonce( $_POST['webmaster_role_nonce'], 'webmaster_switch_action' ) ) {
+            wp_die( 'Nonce no válido. Por favor, inténtalo de nuevo.' );
+        }
+
+        $should_be_webmaster = isset($_POST['webmaster_role_active']);
+        $is_already_switched = get_site_option('webmaster_role_switched_flag') == true;
+        
+        if ($should_be_webmaster && !$is_already_switched) {
+            $this->set_webmaster_role_multisite();
+            update_site_option('webmaster_role_switched_flag', true);
+        } elseif(!$should_be_webmaster && $is_already_switched) {
+            Deactivator::remove_webmaster_role_multisite();
+            update_site_option('webmaster_role_switched_flag', false);
+        }
+   
+        wp_redirect(add_query_arg(['settings-updated' => 'true'], wp_get_referer()));
+        exit;
     }
 
     
