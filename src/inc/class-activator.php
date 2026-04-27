@@ -43,7 +43,23 @@ class Activator {
         }
     }
 
-	public static function activate() {
+	public static function activate($network_wide) {
+        
+        if ( ! is_multisite() ) {
+            deactivate_plugins( plugin_basename( __FILE__ ) );
+            wp_die( 'Este plugin requiere una instalación Multisitio para funcionar.' );
+        }
+
+        
+        if ( ! $network_wide ) {
+            // Si el usuario intentó activarlo solo en un sitio individual:
+            deactivate_plugins( plugin_basename( __FILE__ ) ); // Opcional: lo desactivamos
+            wp_die( 
+                '<strong>WP Webmaster Role:</strong> Este plugin solo puede ser activado a nivel de red (Network Activate). 
+                Por favor, ve al Administrador de la Red para activarlo.' 
+            );
+        }
+
         self::create_rol();
     }
 

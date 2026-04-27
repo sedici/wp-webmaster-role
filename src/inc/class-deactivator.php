@@ -18,7 +18,6 @@ class Deactivator {
         remove_role('webmaster');
     }
 
-    // Al desactivar el plugin
     public static function remove_webmaster_role_multisite() {
         $blog_id_actual = get_current_blog_id();
         $sitios = get_sites();
@@ -32,11 +31,13 @@ class Deactivator {
         switch_to_blog($blog_id_actual);
     }
 
-	public static function deactivate() {
-        if (is_multisite()) {
+	public static function deactivate($network_wide) {
+        if (is_multisite() && $network_wide) {
             self::remove_webmaster_role_multisite();
+        } else {
+            self::remove_role_webmaster_individual_site();
         }
-	    else self::remove_webmaster_role_individual_site();
+
     }
         
 }

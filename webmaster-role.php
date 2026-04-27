@@ -1,8 +1,9 @@
 <?php
 /**
  * Plugin Name: WP Webmaster Role
- * Description: Crea un rol personalizado al activar el plugin. Compatible con multisite y single site.
+ * Description: Crea un rol personalizado al activar el plugin.
  * Version: 1.0
+ * Network: true
  * Author: SEDICI
  * Author URI: http://sedici.unlp.edu.ar/
  * Text Domain:   
