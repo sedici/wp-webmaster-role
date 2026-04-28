@@ -18,6 +18,10 @@ class Admin {
         return self::$instance;
     }
 
+    /**
+     * Registra las funciones en los hooks que utilizará el plugin.
+     * @return void
+     */
     public function run() {
 
         if (is_multisite()) add_action('network_admin_menu', array($this, 'add_plugin_admin_menu'));
@@ -30,6 +34,10 @@ class Admin {
         //add_action('admin_init', array($this, 'create_and_set_webmaster_role_individual_site'));
     }
 
+    /**
+     * Agregar el menú del plugin en el escritorio de wordpress.
+     * @return void
+     */
     public function add_plugin_admin_menu() {
         add_submenu_page(
             'users.php',                 // Slug del menú padre (Usuarios)
@@ -41,10 +49,18 @@ class Admin {
         );
     }
 
+    /**
+     * Incluye el formulario para cambiar los roles.
+     * @return void
+     */
     public function display_switcher_form() {
         include_once dirname(__DIR__) . '/admin/views/role-switcher-form.php';
     }
 
+    /**
+     * Setea el rol Webmaster a todos los usuarios en un entorno multisitio.
+     * @return void
+     */
     private function set_webmaster_role_multisite() {
 
         if (is_multisite()) {
@@ -61,6 +77,10 @@ class Admin {
         }
     }
 
+    /**
+     * Setea el rol Webmaster a los usuarios con rol Editor en el sitio
+     * @return void
+     */
     private function set_webmaster_role_to_editors() {
 
         $editores = get_users(['role' => 'editor']);  
@@ -70,6 +90,10 @@ class Admin {
         }
     }
 
+    /**
+     * Método para procesar el cambio de roles solicitado por el usuario.
+     * @return void
+     */
     public function switch_roles() {
         if ( ! isset( $_POST['webmaster_role_nonce'] ) || ! wp_verify_nonce( $_POST['webmaster_role_nonce'], 'webmaster_switch_action' ) ) {
             wp_die( 'Nonce no válido. Por favor, inténtalo de nuevo.' );
