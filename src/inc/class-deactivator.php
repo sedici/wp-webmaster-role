@@ -30,6 +30,7 @@ class Deactivator {
         foreach ($sitios as $sitio) {
             switch_to_blog($sitio->blog_id);
             self::set_editor_role_to_webmasters();
+            remove_role('webmaster');
             restore_current_blog();
         }
 
@@ -46,7 +47,6 @@ class Deactivator {
 	public static function deactivate($network_wide) {
         if (is_multisite() && $network_wide) {
             self::remove_webmaster_role_multisite();
-            remove_role('webmaster');
             delete_network_option(get_current_network_id(),'webmaster_role_switched_flag');
         }
     }
