@@ -47,7 +47,7 @@ class Deactivator {
         if (is_multisite() && $network_wide) {
             self::remove_webmaster_role_multisite();
             remove_role('webmaster');
-            delete_site_option('webmaster_role_switched_flag');
+            delete_network_option(get_current_network_id(),'webmaster_role_switched_flag');
         }
     }
         

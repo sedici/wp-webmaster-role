@@ -77,7 +77,7 @@ class Activator {
         }
 
         self::create_rol();
-        add_site_option('webmaster_role_switched_flag', false);
+        add_network_option(get_current_network_id(),'webmaster_role_switched_flag', 0);
     }
 
 }
