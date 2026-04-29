@@ -17,6 +17,7 @@ class Activator {
             'customize' => true,
             'create_personal' => true,
             'delete_others_personal' => true,
+            'delete_others_personales' => true,
             'delete_personal' => true,
             'delete_private_personales' => true,
             'delete_published_personales' => true,
