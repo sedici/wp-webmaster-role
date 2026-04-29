@@ -1,0 +1,42 @@
+# WordPress Core
+wp-admin/
+wp-includes/
+index.php
+license.txt
+readme.html
+wp-*.php
+!wp-config-sample.php
+
+# WordPress Content
+wp-content/themes/twentytwenty*/
+wp-content/plugins/hello.php
+wp-content/uploads/
+wp-content/upgrade/
+wp-content/backup-db/
+wp-content/cache/
+wp-content/languages/
+
+# Configuración y Secretos
+wp-config.php
+.env
+*.log
+sitemap.xml
+sitemap.xml.gz
+
+# IDEs y Editores
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Sistema Operativo
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Docker
+.docker/
