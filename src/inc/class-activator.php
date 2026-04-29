@@ -54,6 +54,26 @@ class Activator {
     }
 
     /*
+    * Crea el rol Webmaster en todo el multisitio
+    *
+    * @return void
+    */
+    public static function create_rol_multisite() {
+        if (is_multisite()) {
+            $blog_id_actual = get_current_blog_id();
+            $sitios = get_sites();
+
+            foreach ($sitios as $sitio) {
+                switch_to_blog($sitio->blog_id);
+                self::create_rol();
+                restore_current_blog();
+            }
+
+            switch_to_blog($blog_id_actual);
+        }
+    }
+
+    /*
     * Función de activación del plugin. Chequea que se esté activando a nivel de red y que sea una instalación Multisitio. 
     * Crea el rol Webmaster y setea un flag
     *
@@ -77,7 +97,7 @@ class Activator {
             );
         }
 
-        self::create_rol();
+        self::create_rol_multisite();
         add_network_option(get_current_network_id(),'webmaster_role_switched_flag', 0);
     }
 

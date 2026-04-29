@@ -99,19 +99,21 @@ class Admin {
             wp_die( 'Nonce no válido. Por favor, inténtalo de nuevo.' );
         }
 
-        $should_be_webmaster = isset($_POST['webmaster_role_active']);
-        $is_already_switched = get_site_option('webmaster_role_switched_flag') == true;
-        
-        if ($should_be_webmaster && !$is_already_switched) {
+        $change_request = isset($_POST['webmaster_role_flag']) ? $_POST['webmaster_role_flag'] : 0;
+
+        $flag = get_network_option(get_current_network_id(), 'webmaster_role_switched_flag') == 1;
+
+        if( ($change_request == 1) && ($flag == 0) ) {
             $this->set_webmaster_role_multisite();
-            update_site_option('webmaster_role_switched_flag', true);
-        } elseif(!$should_be_webmaster && $is_already_switched) {
+            update_network_option(get_current_network_id(), 'webmaster_role_switched_flag', 1);
+        } elseif( ($change_request == 0) && ($flag == 1) ) {
             Deactivator::remove_webmaster_role_multisite();
-            update_site_option('webmaster_role_switched_flag', false);
+            update_network_option(get_current_network_id(), 'webmaster_role_switched_flag', 0);
         }
-   
+
         wp_redirect(add_query_arg(['settings-updated' => 'true'], wp_get_referer()));
         exit;
+
     }
 
     
