@@ -5,7 +5,7 @@
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
 // Obtenemos el estado actual del flag
-$is_switched = get_site_option('webmaster_role_switched_flag', false);
+$is_switched = get_network_option(get_current_network_id(), 'webmaster_role_switched_flag')
 
 ?>
 <div class="wrap">
@@ -31,7 +31,7 @@ $is_switched = get_site_option('webmaster_role_switched_flag', false);
                     <th scope="row">Estado del Rol</th>
                     <td>
                         <label class="switch">
-                            <input type="checkbox" name="webmaster_role_active" value="1" <?php checked($is_switched, true); ?>>
+                            <input type="checkbox" name="webmaster_role_flag" value="1" <?php checked($is_switched, 1); ?>>
                             Activar rol Webmaster para los Editores
                         </label>
                     </td>
