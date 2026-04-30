@@ -40,7 +40,7 @@ class Activator {
     *
     * @return void
     */
-    public static function create_rol() {
+    private static function create_rol() {
         if (!get_role('webmaster')) {
             $editor_role = get_role('editor');
             if ($editor_role) {
@@ -58,7 +58,7 @@ class Activator {
     *
     * @return void
     */
-    public static function create_rol_multisite() {
+    private static function create_rol_multisite() {
         if (is_multisite()) {
             $blog_id_actual = get_current_blog_id();
             $sitios = get_sites();
