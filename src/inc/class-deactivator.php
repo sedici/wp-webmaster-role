@@ -9,7 +9,7 @@ class Deactivator {
      * Setea a los usuarios con el rol Webmaster el rol Editor.
      * @return void
      */
-    public static function set_editor_role_to_webmasters() {
+    private static function set_editor_role_to_webmasters() {
         
         $users = get_users(['role' => 'webmaster']);
 
