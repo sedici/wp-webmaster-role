@@ -11,10 +11,16 @@ $is_switched = get_network_option(get_current_network_id(), 'webmaster_role_swit
 <div class="wrap">
     <h1>Gestión de Rol Webmaster</h1>
 
-    <?php if (isset($_GET['settings-updated'])) : ?>
-        <div class="updated notice is-dismissible">
-            <p>Los roles han sido actualizados correctamente.</p>
-        </div>
+    <?php if ( isset( $_GET['settings-updated'] ) ) : ?>
+        <?php if ( $_GET['settings-updated'] === 'true' ) : ?>
+            <div class="notice notice-success is-dismissible">
+                <p>Los roles han sido actualizados correctamente.</p>
+            </div>
+        <?php elseif ( $_GET['settings-updated'] === 'false' ) : ?>
+            <div class="notice notice-error is-dismissible">
+                <p>No se realizaron cambios en los roles.</p>
+            </div>
+        <?php endif; ?>
     <?php endif; ?>
 
     <div class="card" style="max-width: 600px; margin-top: 20px;">

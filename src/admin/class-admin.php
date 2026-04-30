@@ -110,6 +110,10 @@ class Admin {
             Deactivator::remove_webmaster_role_multisite();
             update_network_option(get_current_network_id(), 'webmaster_role_switched_flag', 0);
         }
+        else {
+                wp_redirect(add_query_arg(['settings-updated' => 'false'], wp_get_referer()));
+                exit;
+        }
 
         wp_redirect(add_query_arg(['settings-updated' => 'true'], wp_get_referer()));
         exit;
