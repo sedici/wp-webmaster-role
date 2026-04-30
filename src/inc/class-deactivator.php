@@ -23,14 +23,16 @@ class Deactivator {
      * Le quita el rol Webmaster a todos los usuarios en un entorno multisitio.
      * @return void
      */
-    public static function remove_webmaster_role_multisite() {
+    public static function remove_webmaster_role_multisite($is_deactivating = false) {
         $blog_id_actual = get_current_blog_id();
         $sitios = get_sites();
 
         foreach ($sitios as $sitio) {
             switch_to_blog($sitio->blog_id);
             self::set_editor_role_to_webmasters();
-            remove_role('webmaster');
+            if ($is_deactivating) {
+                remove_role('webmaster');
+            }
             restore_current_blog();
         }
 
@@ -46,7 +48,7 @@ class Deactivator {
     */
 	public static function deactivate($network_wide) {
         if (is_multisite() && $network_wide) {
-            self::remove_webmaster_role_multisite();
+            self::remove_webmaster_role_multisite(true);
             delete_network_option(get_current_network_id(),'webmaster_role_switched_flag');
         }
     }
