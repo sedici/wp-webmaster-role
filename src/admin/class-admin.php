@@ -27,11 +27,7 @@ class Admin {
         if (is_multisite()) add_action('network_admin_menu', array($this, 'add_plugin_admin_menu'));
 
         add_action( 'admin_post_switch_roles_webmaster_plugin', [ $this, 'switch_roles' ] );
-        
 
-
-        //add_action('admin_init', array($this, 'create_and_set_webmaster_role_multisite'));
-        //add_action('admin_init', array($this, 'create_and_set_webmaster_role_individual_site'));
     }
 
     /**
@@ -67,6 +63,7 @@ class Admin {
             wp_die( 'Nonce no válido. Por favor, inténtalo de nuevo.' );
         }
 
+        // Si el input "webmaster_role_flag" no está presente, el usuario quiere desactivar el rol webmaster (Checkbox desmarcado)
         $change_request = isset($_POST['webmaster_role_flag']) ? $_POST['webmaster_role_flag'] : 0;
 
         $flag = get_network_option(get_current_network_id(), 'webmaster_role_switched_flag') == 1;
@@ -79,8 +76,8 @@ class Admin {
             update_network_option(get_current_network_id(), 'webmaster_role_switched_flag', 0);
         }
         else {
-                wp_redirect(add_query_arg(['settings-updated' => 'false'], wp_get_referer()));
-                exit;
+            wp_redirect(add_query_arg(['settings-updated' => 'false'], wp_get_referer()));
+            exit;
         }
 
         wp_redirect(add_query_arg(['settings-updated' => 'true'], wp_get_referer()));
