@@ -59,6 +59,11 @@ class Admin {
      * @return void
      */
     public function switch_roles() {
+
+        if ( ! is_super_admin() ) {
+            wp_die( 'No tienes permisos suficientes para realizar esta acción.' );
+        }
+
         if ( ! isset( $_POST['webmaster_role_nonce'] ) || ! wp_verify_nonce( $_POST['webmaster_role_nonce'], 'webmaster_switch_action' ) ) {
             wp_die( 'Nonce no válido. Por favor, inténtalo de nuevo.' );
         }

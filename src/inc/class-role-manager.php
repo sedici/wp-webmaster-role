@@ -97,7 +97,12 @@ class RoleManager {
      * @return void
      */
     public static function set_webmaster_role_multisite() {
-        self::run_on_all_sites([self::class, 'set_webmaster_role_to_editors']);
+        if( is_super_admin()) {
+            self::run_on_all_sites([self::class, 'set_webmaster_role_to_editors']);
+        }
+        else {
+            return;
+        }
     }
 
     /**
@@ -105,9 +110,13 @@ class RoleManager {
      * @return void
      */
     public static function remove_webmaster_role_multisite() {
-        self::run_on_all_sites([self::class, 'set_editor_role_to_webmasters']);
+        if( is_super_admin() ) {
+            self::run_on_all_sites([self::class, 'set_editor_role_to_webmasters']);
+        }
+        else {
+            return;
+        }
     }
-
 
 
     /**
@@ -145,7 +154,7 @@ class RoleManager {
     * @return void
     */
 	public static function deactivate($network_wide) {
-        if (is_multisite() && $network_wide) {
+        if (is_multisite() && $network_wide && is_super_admin()) {
 
             self::run_on_all_sites( function() {
                 self::set_editor_role_to_webmasters();
@@ -178,9 +187,11 @@ class RoleManager {
             );
         }
 
-        self::create_rol_multisite();
-        // Crea un flag para saber si el rol Webmaster fue seteado a los usuarios o no.
-        add_network_option(get_current_network_id(),'webmaster_role_switched_flag', 0);
+        if( is_super_admin() ) {
+            self::create_rol_multisite();
+            // Crea un flag para saber si el rol Webmaster fue seteado a los usuarios o no.
+            add_network_option(get_current_network_id(),'webmaster_role_switched_flag', 0);
+        }
     }
 
 
