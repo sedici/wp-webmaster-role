@@ -5,7 +5,7 @@
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
 // Obtenemos el estado actual del flag
-$is_switched = get_network_option(get_current_network_id(), 'webmaster_role_switched_flag')
+$is_switched = get_network_option(get_current_network_id(), 'webmaster_role_switched_flag');
 
 ?>
 <div class="wrap">
