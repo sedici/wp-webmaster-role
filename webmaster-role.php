@@ -25,8 +25,8 @@ require_once SEDICI_WEBMASTER_PLUGIN_DIR . 'src/inc/class-autoloader.php';
 // Carga del archivo de la clase Admin 
 require_once SEDICI_WEBMASTER_PLUGIN_DIR . 'src/admin/class-admin.php';
 
-register_activation_hook(__FILE__, array('SediciWebmasterRole\Inc\Activator', 'activate'));
-register_deactivation_hook(__FILE__, array('SediciWebmasterRole\Inc\Deactivator', 'deactivate'));
+register_activation_hook(__FILE__, array('SediciWebmasterRole\Inc\RoleManager', 'activate'));
+register_deactivation_hook(__FILE__, array('SediciWebmasterRole\Inc\RoleManager', 'deactivate'));
 
 
 Class WebmasterRole {

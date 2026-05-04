@@ -1,7 +1,7 @@
 <?php
 
 namespace SediciWebmasterRole\Admin;
-use SediciWebmasterRole\Inc\Deactivator;
+use SediciWebmasterRole\Inc\RoleManager;
 
 if ( ! defined( 'ABSPATH' ) ) {
     exit; // Exit if accessed directly.
@@ -57,38 +57,6 @@ class Admin {
         include_once dirname(__DIR__) . '/admin/views/role-switcher-form.php';
     }
 
-    /**
-     * Setea el rol Webmaster a todos los usuarios en un entorno multisitio.
-     * @return void
-     */
-    private function set_webmaster_role_multisite() {
-
-        if (is_multisite()) {
-            $blog_id_actual = get_current_blog_id();
-            $sitios = get_sites();
-
-            foreach ($sitios as $sitio) {
-                switch_to_blog($sitio->blog_id);
-                $this->set_webmaster_role_to_editors();
-                restore_current_blog();
-            }
-
-            switch_to_blog($blog_id_actual);
-        }
-    }
-
-    /**
-     * Setea el rol Webmaster a los usuarios con rol Editor en el sitio
-     * @return void
-     */
-    private function set_webmaster_role_to_editors() {
-
-        $editores = get_users(['role' => 'editor']);  
-        
-        foreach ($editores as $usuario) {
-            $usuario->set_role('webmaster');
-        }
-    }
 
     /**
      * Método para procesar el cambio de roles solicitado por el usuario.
@@ -104,10 +72,10 @@ class Admin {
         $flag = get_network_option(get_current_network_id(), 'webmaster_role_switched_flag') == 1;
 
         if( ($change_request == 1) && ($flag == 0) ) {
-            $this->set_webmaster_role_multisite();
+            RoleManager::set_webmaster_role_multisite();
             update_network_option(get_current_network_id(), 'webmaster_role_switched_flag', 1);
         } elseif( ($change_request == 0) && ($flag == 1) ) {
-            Deactivator::remove_webmaster_role_multisite(false);
+            RoleManager::remove_webmaster_role_multisite(false);
             update_network_option(get_current_network_id(), 'webmaster_role_switched_flag', 0);
         }
         else {
