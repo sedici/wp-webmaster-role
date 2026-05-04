@@ -62,18 +62,7 @@ class RoleManager {
     * @return void
     */
     private static function create_rol_multisite() {
-        if (is_multisite()) {
-            $blog_id_actual = get_current_blog_id();
-            $sitios = get_sites();
-
-            foreach ($sitios as $sitio) {
-                switch_to_blog($sitio->blog_id);
-                self::create_rol();
-                restore_current_blog();
-            }
-
-            switch_to_blog($blog_id_actual);
-        }
+        self::run_on_all_sites([self::class, 'create_rol']);
     }
 
     /**
@@ -108,39 +97,43 @@ class RoleManager {
      * @return void
      */
     public static function set_webmaster_role_multisite() {
-
-        if (is_multisite()) {
-            $blog_id_actual = get_current_blog_id();
-            $sitios = get_sites();
-
-            foreach ($sitios as $sitio) {
-                switch_to_blog($sitio->blog_id);
-                self::set_webmaster_role_to_editors();
-                restore_current_blog();
-            }
-
-            switch_to_blog($blog_id_actual);
-        }
+        self::run_on_all_sites([self::class, 'set_webmaster_role_to_editors']);
     }
 
     /**
      * Le quita el rol Webmaster a todos los usuarios en un entorno multisitio.
      * @return void
      */
-    public static function remove_webmaster_role_multisite($is_deactivating = false) {
+    public static function remove_webmaster_role_multisite() {
+        self::run_on_all_sites([self::class, 'set_editor_role_to_webmasters']);
+    }
+
+
+
+    /**
+     * Ejecuta una función específica (callback) en todos los sitios de la red multisitio.
+     *
+     * @param callable $callback La función a ejecutar dentro del contexto de cada sitio.
+     * @return void
+     */
+    private static function run_on_all_sites( callable $callback ) {
+        if ( ! is_multisite() ) {
+            return; // Seguridad: Si no es multisitio, salimos.
+        }
+
         $blog_id_actual = get_current_blog_id();
         $sitios = get_sites();
 
-        foreach ($sitios as $sitio) {
-            switch_to_blog($sitio->blog_id);
-            self::set_editor_role_to_webmasters();
-            if ($is_deactivating) {
-                remove_role('webmaster');
-            }
+        foreach ( $sitios as $sitio ) {
+            switch_to_blog( $sitio->blog_id );
+            
+            // Ejecutamos la función que nos pasaron por parámetro
+            call_user_func( $callback );
+            
             restore_current_blog();
         }
 
-        switch_to_blog($blog_id_actual);
+        switch_to_blog( $blog_id_actual );
     }
 
 
@@ -153,7 +146,12 @@ class RoleManager {
     */
 	public static function deactivate($network_wide) {
         if (is_multisite() && $network_wide) {
-            self::remove_webmaster_role_multisite(true);
+
+            self::run_on_all_sites( function() {
+                self::set_editor_role_to_webmasters();
+                remove_role('webmaster');
+            });
+            
             delete_network_option(get_current_network_id(),'webmaster_role_switched_flag');
         }
     }
@@ -166,16 +164,14 @@ class RoleManager {
     * @return void
     */
 	public static function activate($network_wide) {
-        
         if ( ! is_multisite() ) {
-            deactivate_plugins( plugin_basename( __FILE__ ) );
+            deactivate_plugins( plugin_basename(SEDICI_WEBMASTER_PLUGIN_DIR . 'webmaster-role.php') );
             wp_die( 'Este plugin requiere una instalación Multisitio para funcionar.' );
         }
 
-        
         if ( ! $network_wide ) {
             // Si el usuario intentó activarlo solo en un sitio individual:
-            deactivate_plugins( plugin_basename( __FILE__ ) ); // Opcional: lo desactivamos
+            deactivate_plugins( plugin_basename(SEDICI_WEBMASTER_PLUGIN_DIR . 'webmaster-role.php') );
             wp_die( 
                 '<strong>WP Webmaster Role:</strong> Este plugin solo puede ser activado a nivel de red (Network Activate). 
                 Por favor, ve al Administrador de la Red para activarlo.' 

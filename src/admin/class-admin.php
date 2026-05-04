@@ -75,7 +75,7 @@ class Admin {
             RoleManager::set_webmaster_role_multisite();
             update_network_option(get_current_network_id(), 'webmaster_role_switched_flag', 1);
         } elseif( ($change_request == 0) && ($flag == 1) ) {
-            RoleManager::remove_webmaster_role_multisite(false);
+            RoleManager::remove_webmaster_role_multisite();
             update_network_option(get_current_network_id(), 'webmaster_role_switched_flag', 0);
         }
         else {
